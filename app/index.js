@@ -26,6 +26,7 @@ function Online() {
 function Settings() {
   return (
     <View>
+      <Bluetooth />
     </View>
   );
 }
