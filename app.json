@@ -13,7 +13,8 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.Bluetoothtest"
     },
     "android": {
       "adaptiveIcon": {
@@ -38,6 +39,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "cd6e52ad-52e7-4e05-aca0-c3bc3aebfeb8"
+      }
     }
   }
 }
