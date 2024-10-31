@@ -6,11 +6,13 @@ const BLEservice = () => {
   const [device, setDevice] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const [inputText, changeInputText] = useState('');
+  const [SSID, changeSSID] = useState('');
+  const [PASSPHRASE, changePASSPHRASE] = useState('');
 
   // Replace these with your actual UUIDs
   const SERVICE_UUID = "853f29b2-f5ed-4b69-b4c6-9cd68a9fc2b0";
   const SSID_CHARACTERISTIC_UUID = "b72b9432-25f9-4c7f-96cb-fcb8efde84fd";
+  const PASSPHRASE_CHARACTERISTIC_UUID = "7c8451c7-7909-47ef-b072-35d24729b8aa"
 
   useEffect(() => {
     // Request location permission (required for BLE scanning on Android)
@@ -38,7 +40,7 @@ const BLEservice = () => {
         // Check if this is the device you want to connect to
         if (scannedDevice && scannedDevice.serviceUUIDs?.includes(SERVICE_UUID)) {
           // Stop scanning once we find the device
-          console.log("Found Solar Inverter");
+          console.log("Found : " + scannedDevice.name);
           bleManager.stopDeviceScan();
           setIsScanning(false);
 
@@ -83,14 +85,37 @@ const BLEservice = () => {
       await device.writeCharacteristicWithoutResponseForService(
         SERVICE_UUID,
         SSID_CHARACTERISTIC_UUID,
-        btoa(inputText),
+        btoa(SSID),
         null
       )
-      console.log("Successful write to characteristic")
+      console.log("Successful write to characteristic\nWritten value: " + btoa(SSID))
     } catch (error) {
       console.error("Failed to write to characteristic", error)
     }
   };
+
+  const write_passphrase = async () => {
+    try{
+      await device.writeCharacteristicWithoutResponseForService(
+        SERVICE_UUID,
+        PASSPHRASE_CHARACTERISTIC_UUID,
+        btoa(PASSPHRASE),
+        null
+      )
+    } catch(error){
+      console.error("Failed to write to characteristic", error)
+    }
+  }
+
+  const write_both = async () => {
+    try{
+      write_ssid();
+      write_passphrase();
+      console.log("Successful ssid and passphrase write")
+    } catch (error) {
+      console.error("Error writing passphrase and ssid")
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -111,13 +136,20 @@ const BLEservice = () => {
 
       <TextInput
         style={styles.input}
-        placeholder="Type something"
-        value={inputText
-        }
-        onChangeText={text => changeInputText(text)}
+        placeholder="Change SSID"
+        value={SSID}
+        onChangeText={text => changeSSID(text)}
       />
-      <Button title="Submit" onPress={write_ssid} />
-      <Text>Your Input: {inputText}</Text>
+      <Text>New SSID: {SSID}</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Change Passphrase"
+        value={PASSPHRASE}
+        onChangeText={text => changePASSPHRASE(text)}
+      />
+      <Button title="Submit" onPress={write_both}/>
+      <Text>New Passphrase: {PASSPHRASE}</Text>
 
     </View>
   );
