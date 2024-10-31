@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { BleManager } from 'react-native-ble-plx';
+import { View, Text, Button, StyleSheet,TextInput, Platform, PermissionsAndroid } from 'react-native';
+import {bleManager} from '@/utils/BLE_instance'
 
 const BLEservice = () => {
   const [device, setDevice] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
-  const bleManager = new BleManager();
+  const [inputText, changeInputText] = useState('');
 
   // Replace these with your actual UUIDs
-  const SERVICE_UUID = "YOUR_SERVICE_UUID";
-  const CHARACTERISTIC_UUID = "YOUR_CHARACTERISTIC_UUID";
+  const SERVICE_UUID = "853f29b2-f5ed-4b69-b4c6-9cd68a9fc2b0";
+  const SSID_CHARACTERISTIC_UUID = "b72b9432-25f9-4c7f-96cb-fcb8efde84fd";
 
   useEffect(() => {
     // Request location permission (required for BLE scanning on Android)
@@ -20,11 +20,6 @@ const BLEservice = () => {
     };
 
     requestPermissions();
-
-    // Cleanup on component unmount
-    return () => {
-      bleManager.destroy();
-    };
   }, []);
 
   const connectToDevice = async () => {
@@ -43,6 +38,7 @@ const BLEservice = () => {
         // Check if this is the device you want to connect to
         if (scannedDevice && scannedDevice.serviceUUIDs?.includes(SERVICE_UUID)) {
           // Stop scanning once we find the device
+          console.log("Found Solar Inverter");
           bleManager.stopDeviceScan();
           setIsScanning(false);
 
@@ -58,19 +54,6 @@ const BLEservice = () => {
             setDevice(discoveredDevice);
             setIsConnected(true);
 
-            // Set up notification/monitoring of the characteristic
-            await discoveredDevice.monitorCharacteristicForService(
-              SERVICE_UUID,
-              CHARACTERISTIC_UUID,
-              (error, characteristic) => {
-                if (error) {
-                  console.error('Monitoring error:', error);
-                  return;
-                }
-                // Handle incoming data
-                console.log('Received data:', characteristic?.value);
-              }
-            );
           } catch (connectionError) {
             console.error('Connection error:', connectionError);
             setIsConnected(false);
@@ -95,6 +78,20 @@ const BLEservice = () => {
     }
   };
 
+  const write_ssid = async () => {
+    try {
+      await device.writeCharacteristicWithoutResponseForService(
+        SERVICE_UUID,
+        SSID_CHARACTERISTIC_UUID,
+        btoa(inputText),
+        null
+      )
+      console.log("Successful write to characteristic")
+    } catch (error) {
+      console.error("Failed to write to characteristic", error)
+    }
+  };
+
   return (
     <View style={styles.container}>
       {isConnected ? (
@@ -111,13 +108,23 @@ const BLEservice = () => {
           )}
         </View>
       )}
+
+      <TextInput
+        style={styles.input}
+        placeholder="Type something"
+        value={inputText
+        }
+        onChangeText={text => changeInputText(text)}
+      />
+      <Button title="Submit" onPress={write_ssid} />
+      <Text>Your Input: {inputText}</Text>
+
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -125,6 +132,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 16,
   },
+  input: {
+    fontSize : 25
+  }
 });
 
 // Helper function for requesting location permission
