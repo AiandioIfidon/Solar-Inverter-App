@@ -10,10 +10,17 @@
 /*
 Imported variables through header file. Variables are ;
 
+#define BLYNK_TEMPLATE_ID ""
+#define BLYNK_TEMPLATE_NAME ""
+
+constexpr char DEVICE_NAME[] = ""; // Bluetooth device name
+constexpr char PREF_NAMESPACE[] = ""; // Namespace for preferences library
+constexpr size_t MAX_CREDENTIAL_LENGTH = ;  // Maximum characters for BLE characteristics read from the app
+
 const char auth[] = ""; // Blynk authentication token
 
 // UUIDs
-constexpr char SERVICE_UUID[] = "";
+constexpr char SERVICE_UUID[] = ""; // UUIDs can be anything you want as far as they match on the mobile application
 constexpr char SSID_UUID[] = "";
 constexpr char PASSPHRASE_UUID[] = "";
 */
