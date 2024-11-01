@@ -1,6 +1,7 @@
 node_modules/
 .expo/
 android/
+Esp32 code/BLE-implementation/config.h
 dist/
 npm-debug.*
 *.jks
