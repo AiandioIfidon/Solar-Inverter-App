@@ -88,7 +88,7 @@ const BLEservice = () => {
         btoa(SSID),
         null
       )
-      console.log("Successful write to characteristic\nWritten value: " + btoa(SSID))
+      console.log("Successful write to SSID characteristic\nWritten value: " + SSID)
     } catch (error) {
       console.error("Failed to write to characteristic", error)
     }
@@ -102,6 +102,7 @@ const BLEservice = () => {
         btoa(PASSPHRASE),
         null
       )
+      console.log("Successful write to Passphrase characteristic\nWritten value: " + PASSPHRASE)
     } catch(error){
       console.error("Failed to write to characteristic", error)
     }
@@ -111,7 +112,6 @@ const BLEservice = () => {
     try{
       write_ssid();
       write_passphrase();
-      console.log("Successful ssid and passphrase write")
     } catch (error) {
       console.error("Error writing passphrase and ssid")
     }
