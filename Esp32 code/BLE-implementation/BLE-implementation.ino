@@ -3,6 +3,7 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 #include <WiFiClient.h>
+#include <BlynkSimpleE
 #include <string>
 #include <pgmspace.h>
 #include "config.h"
@@ -24,6 +25,8 @@ constexpr char SERVICE_UUID[] = ""; // UUIDs can be anything you want as far as 
 constexpr char SSID_UUID[] = "";
 constexpr char PASSPHRASE_UUID[] = "";
 */
+
+bool isChangingWifi = false;
 
 Preferences preferences;
 
@@ -188,20 +191,42 @@ void setuphandling(){
 }
 
 
+
+BLYNK_WRITE(V0)
+{
+  Serial.println("doing something");
+  if(param.asInt() == 1)
+  {
+    digitalWrite(test_pin, HIGH);
+  } else {
+    digitalWrite(test_pin, LOW);
+  }
+}
+
+
+BLYNK_WRITE(V0)
+{
+  Serial.println("doing something");
+}
+
+const uint8_t Bluetooth_Button = 2;
+
 void setup() {
-    Serial.begin(115200);
-    pinMode(4, OUTPUT);
-    pinMode(2, INPUT);
+  Serial.begin(115200);
+  pinMode(4, OUTPUT);
+  pinMode(Bluetooth_Button, INPUT);
     while (!Serial) {
       delay(10);
     }
-    
+
+  Blynk.begin(auth, ssid, pass, "blynk.cloud", 80);
 }
 
 void loop() {
-  if (digitalRead(2) == HIGH){
+  if (digitalRead(Bluetooth_Button) == HIGH){
     Credentials_Change();
   };
+  
   getWiFiCredentials();
   String ss = String(g_ssid);
   Serial.println("SSID : ");
@@ -211,8 +236,8 @@ void loop() {
   Serial.print(pp);
 
   digitalWrite(4, LOW);
-  delay(2000);
+  delay(3000);
   Serial.println("Waiting");
   digitalWrite(4, HIGH);
-  delay(6000);
+  delay(3000);
 }
