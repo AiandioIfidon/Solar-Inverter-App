@@ -37,9 +37,9 @@ export default function App() {
   return (
     <NavigationContainer independent={true}>
       <Tab.Navigator>
-      <Tab.Screen name="Settings" component={Settings} />
-        <Tab.Screen name="Home" component={Local} />
         <Tab.Screen name="Online" component={Online} />
+        <Tab.Screen name="Home" component={Local} />
+        <Tab.Screen name="Settings" component={Settings} />
       </Tab.Navigator>
     </NavigationContainer>
   );

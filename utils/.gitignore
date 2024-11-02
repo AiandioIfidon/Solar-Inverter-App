@@ -3,7 +3,6 @@ node_modules/
 android/
 dist/
 npm-debug.*
-*.vscode
 *.jks
 *.p8
 *.p12
