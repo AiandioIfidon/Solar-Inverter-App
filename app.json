@@ -22,7 +22,6 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.INTERNET",
         "android.permission.BLUETOOTH",
         "android.permission.BLUETOOTH_ADMIN",
         "android.permission.BLUETOOTH_CONNECT"
