@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Text, View, StyleSheet, Alert } from "react-native";
 import {SERVER_ADDRESS, BLYNK_AUTH_TOKEN, BLYNK_TEMPLATE_ID} from '@env'
 
@@ -9,17 +9,38 @@ const Blynk = () => {
     const blynk_template_id = BLYNK_TEMPLATE_ID
     const Relay_Switch = 'v0'
     const Battery_Monitor = 'v1'
+    const Status_Vpin = 'v2'
     const digital_on = 1
     const digital_off = 0
+    
+    const [Battery_Percentage, setBatteryPercentage] = useState(0)
+    const [Inverter_Status, setInverter_Status] = useState('Offline')
 
-    let Battery_Percentage = 0;
+  useEffect(() => {
+    const getInverter_Status = async () => {
+      try{
+        const status = await fetch(`https://${server_address}/external/api/get?token=${token}&${Status_Vpin}`)
+        if (status.ok){
+          const status_text = await status.text()
+          setInverter_Status(status_text)
+          console.log(Inverter_Status)
+        }
+      } catch(error){
+        console.error("Failed to perform getInverter_Status operation")
+      }  
+    };
+
+    const interval_id2 = setInterval(getInverter_Status, 5000)
+    return () => clearInterval(interval_id2);
+  }, []);
 
   useEffect(() => {
     const getBatteryPercentage = async () => {
       try {
         const response = await fetch(`https://${server_address}/external/api/get?token=${token}&${Battery_Monitor}`)
         if (response.ok){
-          Battery_Percentage = response
+          const value = await response.text();
+          setBatteryPercentage(value)
           console.log(Battery_Percentage)
         } else {
           console.log("Failed to Update Battery percentage")
@@ -29,7 +50,7 @@ const Blynk = () => {
 
     const interval_id = setInterval(getBatteryPercentage, 5000)
     return () => clearInterval(interval_id);
-  }, []);
+  }, [])
 
   const performAction_TurnOn = async () => {
     try {
@@ -58,15 +79,24 @@ const Blynk = () => {
 
   return (
     <View style={styles.container}>
-      <Text>Battery Percentage : {Battery_Percentage}</Text>
+      <Text style = {styles.Battery} >Battery Percentage : {Battery_Percentage}% </Text>
       <Button title = "Switch-on" onPress={performAction_TurnOn} />
       <Button title = "Switch-off" onPress={performAction_TurnOff} />
+      <Text style = {styles.Status} >Device Status: {Inverter_Status} </Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
+  },
+  Battery: {
+    fontSize: 25,
+    color: 'green'
+  },
+  Status: {
+    fontSize: 25,
+    color: 'purple'
   }
 });
 

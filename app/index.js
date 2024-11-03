@@ -37,7 +37,7 @@ export default function App() {
   return (
     <NavigationContainer independent={true}>
       <Tab.Navigator>
-        <Tab.Screen name="Online" component={Online} />
+        <Tab.Screen name="Cloud Control" component={Online} />
         <Tab.Screen name="Home" component={Local} />
         <Tab.Screen name="Settings" component={Settings} />
       </Tab.Navigator>
