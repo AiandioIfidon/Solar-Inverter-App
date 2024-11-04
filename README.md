@@ -1,4 +1,4 @@
-# Solar Inverter App with Esp32 code 👋
+# Solar Inverter App with React Native and Esp32 code 👋
 
 I'll change the readme later.
 
