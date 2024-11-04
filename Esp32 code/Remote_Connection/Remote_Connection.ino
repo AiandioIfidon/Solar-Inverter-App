@@ -13,8 +13,8 @@
 char auth[] = "";
 
 String ssid_string = "";
-char ssid[15];
-char pass[] = "";
+char ssid[15]; // Name of wifi network you want to connext to
+char pass[] = ""; // Password of wifi network you want to
 */
 
 uint8_t test_pin = 13;
@@ -39,9 +39,8 @@ void setup()
 {
   pinMode(test_pin, OUTPUT);
   Serial.begin(115200);
-  strcpy(ssid, ssid_string.c_str());
   Blynk.begin(auth, ssid, pass, "blynk.cloud", 80);
-  timer.setInterval(3000L, battery_and_statusUpdater);
+  timer.setInterval(3000L, battery_and_statusUpdater); // Waits 3 seconds before it performs the function battery_and_statusUp
 }
 
 BLYNK_WRITE(V0)

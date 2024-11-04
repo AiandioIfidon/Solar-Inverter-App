@@ -38,6 +38,17 @@ const Wifi_local = () => {
       </View>
     </SafeAreaView>
   );
+  
+
+  /*return (
+    <SafeAreaView>
+      <WebView
+        originWhitelist={['*']}
+        source={{ html: '<h1>Hello world</h1>' }}
+      />
+    </SafeAreaView>
+  )
+  */
 }
 
 const styles = StyleSheet.create({
