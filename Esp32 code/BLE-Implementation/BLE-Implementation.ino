@@ -6,7 +6,6 @@
 
 #include "config.h"
 #include "bleserver.h"
-#include "flash_storage.h"
 
 /*
 Imported variables through header file. Variables are ;
@@ -30,7 +29,7 @@ const uint8_t Bluetooth_Button = 2;
 
 void setup() {
   Serial.begin(115200);
-  pinMode(4, OUTPUT);
+  pinMode(3, OUTPUT);
   pinMode(Bluetooth_Button, INPUT);
     while (!Serial) {
       delay(10);
@@ -44,16 +43,15 @@ void loop() {
   };
   
   getWiFiCredentials();
-  String ss = String(g_ssid);
-  Serial.println("SSID : ");
-  Serial.print(ss);
-  String pp = String(g_passphrase);
-  Serial.println("Passphrase : \n");
-  Serial.print(pp);
+  Serial.print("SSID : ");
+  Serial.println(g_ssid);
+  Serial.print("Passphrase : ");
+  Serial.println(g_password);
 
-  digitalWrite(4, LOW);
-  delay(3000);
-  Serial.println("Waiting");
-  digitalWrite(4, HIGH);
-  delay(3000);
+  digitalWrite(3, HIGH);
+  Serial.println("3 is set and operation is running normally");
+  delay(1000);
+  digitalWrite(3, LOW);
+  Serial.println("set low now");
+  delay(1000);
 }

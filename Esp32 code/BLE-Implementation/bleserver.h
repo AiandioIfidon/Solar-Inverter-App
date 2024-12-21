@@ -1,13 +1,23 @@
 #ifdef BLYNK_TEMPLATE_ID
 
+Preferences preferences;
+
+void store(String inputValue, const char* name){
+  preferences.begin(PREF_NAMESPACE, false);
+  preferences.putString(name, inputValue);
+  preferences.end();
+  Serial.print("Stored the ");
+  Serial.println(name);
+}
+
 class WiFiCredentialCallback: public BLECharacteristicCallbacks {
 private:
-    char* storage;
+    String storage;
     const char* name;
     const size_t maxLength;
 
 public:
-    WiFiCredentialCallback(char* storage, const char* name, size_t maxLen) 
+    WiFiCredentialCallback(String storage, const char* name, size_t maxLen) 
         : storage(storage), name(name), maxLength(maxLen) {}
 
     void onWrite(BLECharacteristic *pCharacteristic) override {
@@ -17,18 +27,14 @@ public:
             return;
         }
         
-        strncpy(storage, value.c_str(), maxLength - 1);
-        storage[maxLength - 1] = '\0';  // Ensure null termination
+        storage = value;
         
         Serial.print(name);
         Serial.print(F(" received: "));
         Serial.println(storage);
+        store(storage, name);
     }
 };
-
-
-
-
 
 void setupBLEServer() {
     BLEDevice::init(DEVICE_NAME);
@@ -58,8 +64,8 @@ void setupBLEServer() {
         return;
     }
 
-    ssidChar->setCallbacks(new WiFiCredentialCallback(g_ssid, "SSID", MAX_CREDENTIAL_LENGTH));
-    passChar->setCallbacks(new WiFiCredentialCallback(g_passphrase, "PassPhrase", MAX_CREDENTIAL_LENGTH));
+    ssidChar->setCallbacks(new WiFiCredentialCallback(g_ssid, "ssid", MAX_CREDENTIAL_LENGTH));
+    passChar->setCallbacks(new WiFiCredentialCallback(g_password, "password", MAX_CREDENTIAL_LENGTH));
 
     pService->start();
 
@@ -72,6 +78,63 @@ void setupBLEServer() {
 
     Serial.println(F("BLE server started successfully"));
     return;
+}
+
+ void getWiFiCredentials() {
+    if (!preferences.begin(PREF_NAMESPACE, true)) {
+        Serial.println(F("Failed to open preferences"));
+        return;
+    }
+    
+    g_ssid = preferences.getString("ssid", "");
+    g_password = preferences.getString("password", "");
+    
+    if (g_ssid.length() >= MAX_CREDENTIAL_LENGTH || 
+        g_password.length() >= MAX_CREDENTIAL_LENGTH) {
+        Serial.println(F("Stored credentials too long, changing is to less that 64 characters is adviced"));
+        preferences.end();
+        return;
+    }
+    Serial.println("Found wifi credentials");
+    preferences.end();
+    return;
+}
+
+
+
+void Credentials_Change() {
+  setupBLEServer();
+  updatingCredentials = true;
+  g_password = "";
+  g_ssid = "";
+  store(g_ssid, "ssid");
+  store(g_password, "password");
+
+  while(g_ssid == "" && g_password == ""){
+    getWiFiCredentials();
+    Serial.println("\nStill waiting for changes");
+    delay(3000);
+  }
+  updatingCredentials = false;
+  Serial.println("Successfully changed wifi credentials");
+}
+
+
+void setuphandling(){
+  // Open preferences in read-only mode
+    preferences.begin(PREF_NAMESPACE, true);
+    bool hasCredentials = preferences.isKey("ssid");
+    preferences.end();
+
+    if (!hasCredentials) {
+      Serial.println(F("No stored credentials, starting BLE..."));
+      Credentials_Change();
+    } else {
+        getWiFiCredentials();
+        if (g_ssid[0] == '\0' && g_password[0] == '\0'){
+          Credentials_Change();
+        }
+      }
 }
 
 

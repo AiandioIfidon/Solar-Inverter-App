@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Button, Text, View, StyleSheet, Alert } from "react-native";
-import {SERVER_ADDRESS, BLYNK_AUTH_TOKEN, BLYNK_TEMPLATE_ID} from '@env'
 
 const Blynk = () => {
 
-    const server_address = SERVER_ADDRESS
-    const token = BLYNK_AUTH_TOKEN
-    const blynk_template_id = BLYNK_TEMPLATE_ID
+    const server_address = "blynk.com"
+    const token = "token"
     const Relay_Switch = 'v0'
     const Battery_Monitor = 'v1'
     const Status_Vpin = 'v2'

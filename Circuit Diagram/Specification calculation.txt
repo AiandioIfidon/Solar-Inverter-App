@@ -1,0 +1,13 @@
+For the switching relay;
+3.3v GPIO to switch a 5v relay using 2n2222 transistor
+
+2n2222 transistor collector current is 800mA with a current gain of 30 to 300hfe, meaning the trigger current needed with be between (800/30)mA to (800/300)mA.
+This means the trigger current with be between 26.7mA to 2.67mA. For now lets just go with 20mA.
+
+With 3.3v from the GPIO pin and 'R' for the resistor value to get the 20mA current.
+V = IR, R = V/I
+Therefore, R = 3.3V / 0.02A = 165 ohms
+using 200ohms for the resistor we get a current of ;
+I = V/R
+I = 3.3/0.2 = 16.5mA with is between 26.7mA and 2.67mA.
+Therefore, for the resistor I will be using a 200ohms resistor.
