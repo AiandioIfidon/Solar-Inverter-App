@@ -2,10 +2,11 @@
 #include <BLEDevice.h>
 #include <BLEUtils.h>
 #include <BLEServer.h>
-#include <pgmspace.h>
+
 
 #include "config.h"
 #include "bleserver.h"
+#include "wifi_connect.h"
 
 /*
 Imported variables through header file. Variables are ;
@@ -25,33 +26,39 @@ constexpr char SSID_UUID[] = "";
 constexpr char PASSPHRASE_UUID[] = "";
 */
 
-const uint8_t Bluetooth_Button = 2;
+
 
 void setup() {
   Serial.begin(115200);
-  pinMode(3, OUTPUT);
+  while (!Serial) {
+    delay(10);
+  }
+  pinMode(test_pin, OUTPUT);
   pinMode(Bluetooth_Button, INPUT);
-    while (!Serial) {
-      delay(10);
-    }
+  getWiFiCredentials();
+  wifiConnect(g_ssid, g_password);
 }
 
 
 void loop() {
   if (digitalRead(Bluetooth_Button) == HIGH){
     Credentials_Change();
+
   };
+  if (WiFi.status() == WL_CONNECTED){
+    Serial.println("Successfully connected to ");
+    Serial.println(g_ssid);
+    Serial.println("IP address: ");
+    Serial.println(WiFi.localIP());
+  }
   
   getWiFiCredentials();
-  Serial.print("SSID : ");
-  Serial.println(g_ssid);
-  Serial.print("Passphrase : ");
-  Serial.println(g_password);
 
-  digitalWrite(3, HIGH);
-  Serial.println("3 is set and operation is running normally");
+  
+  digitalWrite(test_pin, HIGH);
+  Serial.println("Relay is set and operation is running normally");
   delay(1000);
-  digitalWrite(3, LOW);
+  digitalWrite(test_pin, LOW);
   Serial.println("set low now");
   delay(1000);
 }

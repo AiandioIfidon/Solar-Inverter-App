@@ -96,6 +96,10 @@ void setupBLEServer() {
         return;
     }
     Serial.println("Found wifi credentials");
+    Serial.print("ssid: ");
+    Serial.println(g_ssid);
+    Serial.print("password: ");
+    Serial.println(g_password);
     preferences.end();
     return;
 }
@@ -115,6 +119,9 @@ void Credentials_Change() {
     Serial.println("\nStill waiting for changes");
     delay(3000);
   }
+  store(g_ssid, "ssid");
+  store(g_password, "password");
+  getWiFiCredentials();
   updatingCredentials = false;
   Serial.println("Successfully changed wifi credentials");
 }
