@@ -3,16 +3,24 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 
-
 #include "config.h"
 #include "bleserver.h"
 #include "wifi_connect.h"
+#include "blynk.h"
 
 /*
-Imported variables through header file. Variables are ;
+Imported variables through config header file. Variables are ;
 
 #define BLYNK_TEMPLATE_ID ""
 #define BLYNK_TEMPLATE_NAME ""
+
+char ssid[64];
+char pass[64];
+
+//GPIO pin numbers.
+const uint8_t Bluetooth_Button = 22; 
+const int test_pin = 23;
+uint8_t battery_percentage = 0;
 
 constexpr char DEVICE_NAME[] = ""; // Bluetooth device name
 constexpr char PREF_NAMESPACE[] = ""; // Namespace for preferences library
@@ -37,28 +45,29 @@ void setup() {
   pinMode(Bluetooth_Button, INPUT);
   getWiFiCredentials();
   wifiConnect(g_ssid, g_password);
+
+  if (WiFi.status() == WL_CONNECTED){
+  Serial.println("Successfully connected to ");
+  Serial.println(g_ssid);
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+  }
+
+  Blynk.config(auth, "blynk.cloud", 80);
+  Blynk.connect();
+  timer.setInterval(3000L, battery_and_statusUpdater);
 }
 
 
 void loop() {
   if (digitalRead(Bluetooth_Button) == HIGH){
     Credentials_Change();
-
+    esp_restart(); // restart needed to save in the flash storage.
   };
-  if (WiFi.status() == WL_CONNECTED){
-    Serial.println("Successfully connected to ");
-    Serial.println(g_ssid);
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
-  }
-  
-  getWiFiCredentials();
 
+  getWiFiCredentials();
   
-  digitalWrite(test_pin, HIGH);
-  Serial.println("Relay is set and operation is running normally");
-  delay(1000);
-  digitalWrite(test_pin, LOW);
-  Serial.println("set low now");
-  delay(1000);
+  Blynk.run();
+  timer.run();
+  delay(300);
 }

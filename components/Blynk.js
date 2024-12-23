@@ -3,8 +3,8 @@ import { Button, Text, View, StyleSheet, Alert } from "react-native";
 
 const Blynk = () => {
 
-    const server_address = "blynk.com"
-    const token = "token"
+    const server_address = "blynk.cloud"
+    const token = "Cka-31Akppx-UNnQUQQ5f5Bea6IVf1Kd"
     const Relay_Switch = 'v0'
     const Battery_Monitor = 'v1'
     const Status_Vpin = 'v2'
@@ -65,14 +65,11 @@ const Blynk = () => {
     try {
         const response = await fetch(`http://${server_address}/external/api/update?token=${token}&${Relay_Switch}=${digital_off}`);
       if (response.ok) {
-        const result = await response.json(); // Assuming the response is in JSON format
         Alert.alert("Solar Inverter turn off successfully!");
-        console.log(result);
       } else {
         Alert.alert("Error", "Failed to turn off Solar Inverter");
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   return (

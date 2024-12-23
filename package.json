@@ -52,5 +52,9 @@
     "react-test-renderer": "18.2.0",
     "typescript": "~5.3.3"
   },
-  "private": true
+  "private": true,
+  "description": "I'll change the readme later.",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
