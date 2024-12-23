@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Button, Text, View, StyleSheet, Alert } from "react-native";
+import { auth_token } from './token'
 
 const Blynk = () => {
 
     const server_address = "blynk.cloud"
-    const token = "Cka-31Akppx-UNnQUQQ5f5Bea6IVf1Kd"
+    const token = auth_token
     const Relay_Switch = 'v0'
     const Battery_Monitor = 'v1'
     const Status_Vpin = 'v2'
