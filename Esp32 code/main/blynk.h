@@ -4,6 +4,17 @@
 
 BlynkTimer timer;
 
+void power_consumption_updater(){
+  delay(2000);
+  power_consumption += 0.31;
+  if(power_consumption > 30){
+    Serial.println("Battery percentage exceeds 100!");
+    power_consumption = 0;
+    return;
+  }
+  Blynk.virtualWrite(V3, power_consumption);
+}
+
 void battery_and_statusUpdater(){
   delay(2000);
   battery_percentage++;

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Button, Text, View, StyleSheet, Alert } from "react-native";
+import { Switch, Text, View, StyleSheet, Alert } from "react-native";
 import { auth_token } from './token'
 
-const Blynk = () => {
+const Blynk2 = () => {
 
     const server_address = "blynk.cloud"
     const token = auth_token
@@ -12,6 +12,8 @@ const Blynk = () => {
     const Power_pin = 'v3'
     const digital_on = 1
     const digital_off = 0
+
+    const [isOn, setIsOn] = useState(false);
     
     const [Battery_Percentage, setBatteryPercentage] = useState(0)
     const [Inverter_Status, setInverter_Status] = useState('Offline')
@@ -24,7 +26,6 @@ const Blynk = () => {
         if (status.ok){
           const status_text = await status.text()
           setInverter_Status(status_text)
-          console.log(Inverter_Status)
         }
       } catch(error){
         console.error("Failed to perform getInverter_Status operation")
@@ -42,7 +43,6 @@ const Blynk = () => {
         if (response.ok){
           const value = await response.text();
           setBatteryPercentage(value)
-          console.log(Battery_Percentage)
         } else {
           console.log("Failed to Update Battery percentage")
         }
@@ -91,6 +91,48 @@ const Blynk = () => {
     } catch (error) {}
   };
 
+  const toggleHandler = async () => {
+    setIsOn(!isOn);
+    if (isOn) {
+      await performAction_TurnOff();
+    } else {
+      await performAction_TurnOn();
+    }
+  };
+  
+  return (
+      <View style={styles.container}>
+      {/* Online Status */}
+      <View style={styles.row}>
+        <Text style={styles.label}>Status:</Text>
+        <Text style={styles.status}> Device status : {Inverter_Status} </Text>
+      </View>
+
+      {/* On/Off Switch */}
+      <View style={styles.row}>
+        <Text style={styles.label}>Power:</Text>
+        <Switch
+          value={isOn}
+          onValueChange={() => toggleHandler()}
+          />
+      </View>
+
+      {/* Battery Percentage */}
+      <View style={styles.row}>
+        <Text style={styles.label}>Battery:</Text>
+        <Text style={styles.value}>{Battery_Percentage}%</Text>
+      </View>
+
+      {/* Power Consumption */}
+      <View style={styles.row}>
+        <Text style={styles.label}>Power Consumption:</Text>
+        <Text style={styles.value}>{Power_Consumption} W</Text>
+      </View>
+    </View>
+  );
+}
+  
+  /*
   return (
     <View style={styles.container}>
       <Text style = {styles.Status} >Device Status: {Inverter_Status} </Text>
@@ -101,7 +143,9 @@ const Blynk = () => {
     </View>
   );
 };
+*/
 
+/*
 const styles = StyleSheet.create({
   container: {
   },
@@ -118,5 +162,39 @@ const styles = StyleSheet.create({
     color: 'purple'
   }
 });
+*/
 
-export default Blynk;
+const styles = StyleSheet.create({
+    container: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'pink',
+      padding: 20
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginVertical: 10,
+      width: '100%',
+      justifyContent: 'space-between',
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    status: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    online: {
+      color: 'green',
+    },
+    offline: {
+      color: 'red',
+    },
+    value: {
+      fontSize: 16,
+    },
+  });
+
+export default Blynk2;

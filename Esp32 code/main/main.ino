@@ -56,6 +56,7 @@ void setup() {
   Blynk.config(auth, "blynk.cloud", 80);
   Blynk.connect();
   timer.setInterval(3000L, battery_and_statusUpdater);
+  timer.setInterval(1000L, power_consumption_updater);
 }
 
 
@@ -63,10 +64,7 @@ void loop() {
   if (digitalRead(Bluetooth_Button) == HIGH){
     Credentials_Change();
     esp_restart(); // restart needed to save in the flash storage.
-  };
-
-  getWiFiCredentials();
-  
+  }
   Blynk.run();
   timer.run();
   delay(300);

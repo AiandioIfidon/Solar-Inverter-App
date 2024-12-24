@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Blynk from '@/components/Blynk'
+import Blynk2 from '@/components/Blynk2'
 import BLEservice from '@/components/BLEservice'
 import Wifi_local from '@/components/Wifi_local'
 
@@ -18,7 +18,7 @@ function Local() {
 function Online() {
   return (
     <View>
-      <Blynk />
+      <Blynk2 />
     </View>
   );
 }
