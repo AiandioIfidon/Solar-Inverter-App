@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet,TextInput, Platform, PermissionsAndroid } from 'react-native';
+import { View, Text, Button, StyleSheet, TextInput, Platform, PermissionsAndroid, TouchableOpacity, ActivityIndicator } from 'react-native';
 import {bleManager} from '@/utils/BLE_instance'
+import { MaterialIcons, Feather } from '@expo/vector-icons';
 
 const BLEservice = () => {
   const [device, setDevice] = useState(null);
@@ -9,13 +10,12 @@ const BLEservice = () => {
   const [SSID, changeSSID] = useState('');
   const [PASSPHRASE, changePASSPHRASE] = useState('');
 
-  // Replace these with your actual UUIDs
+  // UUIDs of the service and characteristics
   const SERVICE_UUID = "853f29b2-f5ed-4b69-b4c6-9cd68a9fc2b0";
   const SSID_CHARACTERISTIC_UUID = "b72b9432-25f9-4c7f-96cb-fcb8efde84fd";
   const PASSPHRASE_CHARACTERISTIC_UUID = "7c8451c7-7909-47ef-b072-35d24729b8aa"
 
   useEffect(() => {
-    // Request location permission (required for BLE scanning on Android)
     const requestPermissions = async () => {
       const granted = await requestLocationPermission();
       return granted;
@@ -112,6 +112,9 @@ const BLEservice = () => {
     try{
       write_ssid();
       write_passphrase();
+      setTimeout(() => {
+        disconnectDevice();
+      }, 1000);
     } catch (error) {
       console.error("Error writing passphrase and ssid")
     }
@@ -119,70 +122,224 @@ const BLEservice = () => {
 
   return (
     <View style={styles.container}>
-      {isConnected ? (
-        <View>
-          <Text style={styles.statusText}>Connected to device</Text>
-          <Button title="Disconnect" onPress={disconnectDevice} />
-        </View>
-      ) : (
-        <View>
-          {isScanning ? (
-            <Text style={styles.statusText}>Scanning for devices...</Text>
+      <View style={styles.card}>
+        <View style={styles.statusSection}>
+          {isConnected ? (
+            <>
+              <View style={styles.statusIndicator}>
+                <MaterialIcons name="wifi" size={24} color="#22c55e" />
+                <View style={[styles.statusDot, styles.statusConnected]} />
+              </View>
+              <Text style={styles.statusTitle}>Connected</Text>
+              <TouchableOpacity
+                style={styles.disconnectButton}
+                onPress={disconnectDevice}
+              >
+                <MaterialIcons name="wifi-off" size={20} color="#ef4444" />
+                <Text style={styles.disconnectText}>Disconnect</Text>
+              </TouchableOpacity>
+            </>
           ) : (
-            <Button title="Connect to device" onPress={connectToDevice} />
+            <>
+              <View style={styles.statusIndicator}>
+                <MaterialIcons name="wifi" size={24} color="#94a3b8" />
+                <View style={[styles.statusDot, styles.statusDisconnected]} />
+              </View>
+              <Text style={styles.statusTitle}>Not Connected </Text>
+              <Text style={styles.note}>Bluetooth and Location must be enabled</Text>
+              {isScanning ? (
+                <View style={styles.scanningContainer}>
+                  <ActivityIndicator color="#2563eb" />
+                  <Text style={styles.scanningText}>Scanning for devices...</Text>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  style={styles.connectButton}
+                  onPress={connectToDevice}
+                >
+                  <Text style={styles.connectButtonText}>Connect Device</Text>
+                </TouchableOpacity>
+              )}
+            </>
           )}
         </View>
-      )}
 
-      <TextInput
-        style={styles.input}
-        placeholder="Change SSID"
-        value={SSID}
-        onChangeText={text => changeSSID(text)}
-      />
-      <Text>New SSID: {SSID}</Text>
+        <View style={styles.configSection}>
+          <Text style={styles.configTitle}>Network Configuration</Text>
+          
+          <View style={styles.inputContainer}>
+            <Feather name="user" size={20} color="#64748b" />
+            <TextInput
+              style={styles.input}
+              placeholder="Network SSID"
+              placeholderTextColor="#94a3b8"
+              value={SSID}
+              onChangeText={text => changeSSID(text)}
+            />
+          </View>
+          
+          <View style={styles.inputContainer}>
+            <Feather name="lock" size={20} color="#64748b" />
+            <TextInput
+              style={styles.input}
+              placeholder="Network Password"
+              placeholderTextColor="#94a3b8"
+              value={PASSPHRASE}
+              onChangeText={text => changePASSPHRASE(text)}
+              secureTextEntry
+            />
+          </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Change Passphrase"
-        value={PASSPHRASE}
-        onChangeText={text => changePASSPHRASE(text)}
-      />
-      <Button title="Submit" onPress={write_both}/>
-      <Text>New Passphrase: {PASSPHRASE}</Text>
-
+          <TouchableOpacity 
+            style={styles.submitButton}
+            onPress={write_both}
+          >
+            <Text style={styles.submitButtonText}>Update Network Settings</Text>
+            <MaterialIcons name="arrow-right" size={20} color="#ffffff" />
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+    padding: 16,
   },
-  statusText: {
-    fontSize: 18,
+  card: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  note:{
+    fontStyle: 'italic'
+  },
+  statusSection: {
+    alignItems: 'center',
+    paddingBottom: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+  },
+  statusIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginLeft: 8,
+  },
+  statusConnected: {
+    backgroundColor: '#22c55e',
+  },
+  statusDisconnected: {
+    backgroundColor: '#94a3b8',
+  },
+  statusTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#0f172a',
     marginBottom: 16,
   },
+  disconnectButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#fee2e2',
+    borderRadius: 12,
+  },
+  disconnectText: {
+    color: '#ef4444',
+    fontWeight: '500',
+    marginLeft: 8,
+  },
+  connectButton: {
+    backgroundColor: '#2563eb',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+  },
+  connectButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  scanningContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  scanningText: {
+    color: '#64748b',
+    marginLeft: 8,
+    fontSize: 16,
+  },
+  configSection: {
+    marginTop: 24,
+  },
+  configTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#0f172a',
+    marginBottom: 16,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
   input: {
-    fontSize : 25
-  }
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    fontSize: 16,
+    color: '#0f172a',
+  },
+  submitButton: {
+    backgroundColor: '#2563eb',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 8,
+  },
+  submitButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginRight: 8,
+  },
 });
+
 
 // Helper function for requesting location permission
 const requestLocationPermission = async () => {
-  try {
-    if (Platform.OS === 'android') {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    }
-    return true;
-  } catch (err) {
-    console.error('Permission error:', err);
-    return false;
-  }
+  if (Platform.OS !== 'android') return false;
+
+  const permission =
+    Platform.Version >= 31
+      ? PERMISSIONS.ANDROID.BLUETOOTH_SCAN
+      : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+
+  const result = await request(permission);
+  return result === RESULTS.GRANTED;
 };
 
 export default BLEservice;

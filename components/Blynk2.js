@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Switch, Text, View, StyleSheet, Alert } from "react-native";
+import React, {useEffect, useState } from "react";
+import {TouchableOpacity, Dimensions, Text, View, StyleSheet, Alert } from "react-native";
+import Icon from 'react-native-vector-icons/Feather';
 import { auth_token } from './token'
+
+const { width, height } = Dimensions.get('window');
 
 const Blynk2 = () => {
 
@@ -91,79 +94,270 @@ const Blynk2 = () => {
     } catch (error) {}
   };
 
-  const toggleHandler = async () => {
-    setIsOn(!isOn);
-    if (isOn) {
-      await performAction_TurnOff();
-    } else {
-      await performAction_TurnOn();
-    }
+   const toggleHandler = () => {
+     if (isOn) {
+       performAction_TurnOff();
+      } else {
+        performAction_TurnOn();
+      }
+      setIsOn(!isOn);
   };
-  
+
+
+
+
+
+  const getStatusColor = (status) => {
+    return status?.toLowerCase() === "online" ? "#34d399" : "#f87171";
+  };
+
+  const getBatteryColor = (percentage) => {
+    if (percentage >= 70) return "#34d399";
+    if (percentage >= 30) return "#fbbf24";
+    return "#f87171";
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.grid}>
+        <View style={styles.card}>
+          <Icon 
+            name="power" 
+            size={48} 
+            color={getStatusColor(Inverter_Status)} 
+            style={styles.icon}
+          />
+          <Text style={styles.title}>Inverter Status</Text>
+          <View style={[styles.statusDot, { backgroundColor: getStatusColor(Inverter_Status) }]} />
+          <Text style={[styles.value, { color: getStatusColor(Inverter_Status) }]}>
+            {Inverter_Status || 'Unknown'}
+          </Text>
+        </View>
+
+        <View style={styles.card}>
+          <Icon
+            name="zap"
+            size={48}
+            color="#fbbf24"
+            style={styles.icon}
+          />
+          <Text style={styles.title}>Power Control</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[
+                styles.controlButton,
+                isOn && styles.activeButton,
+                { marginRight: 8 }
+              ]}
+              onPress={() => {
+                setIsOn(true);
+                performAction_TurnOn()}}
+            >
+              <Text style={[
+                styles.buttonText,
+                isOn && styles.activeButtonText
+              ]}>ON</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.controlButton,
+                !isOn && styles.activeButton
+              ]}
+              onPress={() => {
+                setIsOn(false);
+                performAction_TurnOff()}}
+            >
+              <Text style={[
+                styles.buttonText,
+                !isOn && styles.activeButtonText
+              ]}>OFF</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View style={styles.card}>
+          <Icon 
+            name="battery" 
+            size={48} 
+            color={getBatteryColor(Battery_Percentage)} 
+            style={styles.icon}
+          />
+          <Text style={styles.title}>Battery Level</Text>
+          <Text style={[styles.value, { color: getBatteryColor(Battery_Percentage) }]}>
+            {Battery_Percentage !== undefined ? `${Math.min(100, Math.max(0, Battery_Percentage))}%` : '0%'}
+          </Text>
+          <View style={styles.batteryBar}>
+            <View 
+              style={[
+                styles.batteryFill, 
+                { 
+                  width: `${Math.min(100, Math.max(0, Battery_Percentage || 0))}%`,
+                  backgroundColor: getBatteryColor(Battery_Percentage)
+                }
+              ]} 
+            />
+          </View>
+        </View>
+
+        {/* Power Consumption */}
+        <View style={styles.card}>
+          <Icon 
+            name="activity" 
+            size={48} 
+            color="#60a5fa" 
+            style={styles.icon}
+          />
+          <Text style={styles.title}>Power Consumption</Text>
+          <Text style={styles.value}>
+            <Text style={[styles.value, { color: '#60a5fa' }]}>
+              {Power_Consumption !== undefined ? Power_Consumption : '0'}
+            </Text>
+            <Text style={styles.unit}> Amps</Text>
+          </Text>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a', // Dark background
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    padding: 8
+  },
+  card: {
+    width: (width - 40) / 2,
+    height: (height - 200) / 2,
+    backgroundColor: '#1e3a8a', // Blue background for cards
+    margin: 4,
+    borderRadius: 16,
+    padding: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: '#2563eb',
+  },
+  icon: {
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#bfdbfe', // Light blue text
+    textAlign: 'center',
+  },
+  value: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  unit: {
+    fontSize: 16,
+    fontWeight: 'normal',
+    color: '#bfdbfe',
+  },
+  switch: {
+    transform: [{ scale: 1.2 }],
+    marginVertical: 8,
+  },
+  switchLabel: {
+    fontSize: 16,
+    marginTop: 4,
+    color: '#bfdbfe',
+  },
+  statusDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    marginBottom: 8,
+  },
+  batteryBar: {
+    width: '80%',
+    height: 8,
+    backgroundColor: '#1e3a8a',
+    borderRadius: 4,
+    marginTop: 8,
+    overflow: 'hidden',
+  },
+  batteryFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  controlButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: '#1e3a8a',
+    borderWidth: 1,
+    borderColor: '#2563eb',
+  },
+  activeButton: {
+    backgroundColor: '#34d399',
+    borderColor: '#34d399',
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#bfdbfe',
+  },
+  activeButtonText: {
+    color: '#ffffff',
+  },
+});
+
+/*  
   return (
       <View style={styles.container}>
-      {/* Online Status */}
+      //{ Online Status }
       <View style={styles.row}>
         <Text style={styles.label}>Status:</Text>
         <Text style={styles.status}> Device status : {Inverter_Status} </Text>
       </View>
 
-      {/* On/Off Switch */}
+      //{ On/Off Switch }
       <View style={styles.row}>
-        <Text style={styles.label}>Power:</Text>
-        <Switch
+        <CustomToggle
           value={isOn}
-          onValueChange={() => toggleHandler()}
-          />
+          onValueChange={toggleHandler}
+          label="Power"
+        />
       </View>
 
-      {/* Battery Percentage */}
+      //{Battery Percentage }
       <View style={styles.row}>
         <Text style={styles.label}>Battery:</Text>
         <Text style={styles.value}>{Battery_Percentage}%</Text>
       </View>
 
-      {/* Power Consumption */}
+      //{ Power Consumption }
       <View style={styles.row}>
         <Text style={styles.label}>Power Consumption:</Text>
-        <Text style={styles.value}>{Power_Consumption} W</Text>
+        <Text style={styles.value}>{Power_Consumption} Amps</Text>
       </View>
     </View>
   );
 }
   
-  /*
-  return (
-    <View style={styles.container}>
-      <Text style = {styles.Status} >Device Status: {Inverter_Status} </Text>
-      <Button title = "Switch-on" onPress={performAction_TurnOn} />
-      <Button title = "Switch-off" onPress={performAction_TurnOff} />
-      <Text style = {styles.Battery} >Battery Percentage : {Battery_Percentage}% </Text>
-      <Text style = {styles.Power}>Power Consumption : {Power_Consumption}Amps</Text>
-    </View>
-  );
-};
-*/
-
-/*
-const styles = StyleSheet.create({
-  container: {
-  },
-  Battery: {
-    fontSize: 25,
-    color: 'green'
-  },
-  Power: {
-    fontSize: 25,
-    color: 'orange'
-  },
-  Status: {
-    fontSize: 25,
-    color: 'purple'
-  }
-});
-*/
-
 const styles = StyleSheet.create({
     container: {
       justifyContent: 'center',
@@ -197,4 +391,7 @@ const styles = StyleSheet.create({
     },
   });
 
+  */
+
+  
 export default Blynk2;
