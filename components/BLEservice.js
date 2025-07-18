@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, TextInput, Platform, PermissionsAndroid, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Button,ScrollView, StyleSheet, TextInput, Platform, PermissionsAndroid, TouchableOpacity, ActivityIndicator } from 'react-native';
 import {bleManager} from '@/utils/BLE_instance'
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 
@@ -121,7 +121,8 @@ const BLEservice = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView>
+      <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.statusSection}>
           {isConnected ? (
@@ -199,36 +200,110 @@ const BLEservice = () => {
           </TouchableOpacity>
         </View>
       </View>
+      <View style={styles.infoSection}>
+        <Text style={styles.sectionTitle}>How to Use</Text>
+        <View style={styles.instructionItem}>
+          <View style={styles.instructionNumber}>
+            <Text style={styles.numberText}>1</Text>
+          </View>
+          <Text style={styles.instructionText}>Enable Bluetooth and Location(or allow nearby devices) on your device</Text>
+        </View>
+        <View style={styles.instructionItem}>
+          <View style={styles.instructionNumber}>
+            <Text style={styles.numberText}>2</Text>
+          </View>
+          <Text style={styles.instructionText}>Connect to your BLE device using the Connect button</Text>
+        </View>
+        <View style={styles.instructionItem}>
+          <View style={styles.instructionNumber}>
+            <Text style={styles.numberText}>3</Text>
+          </View>
+          <Text style={styles.instructionText}>Enter WiFi network name and password</Text>
+        </View>
+        <View style={styles.instructionItem}>
+          <View style={styles.instructionNumber}>
+            <Text style={styles.numberText}>4</Text>
+          </View>
+          <Text style={styles.instructionText}>Click "Update Network Settings" to send credentials and wait for device to restart</Text>
+        </View>
+        <View style={styles.instructionItem}>
+          <View style={styles.instructionNumber}>
+            <Text style={styles.numberText}>?</Text>
+          </View>
+          <Text style={styles.instructionText}>If device keeps trying to connect to the WiFi network without success, try updating the Network setting again but with the mobile phone closer(about 3 meters) to the device</Text>
+        </View>
+      </View>
     </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#EEF2FF', // Light indigo background matching Blynk2
     padding: 16,
   },
+  infoSection: {
+    marginTop: 20,
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#DFE3F8',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#4F5B93',
+    marginBottom: 12,
+  },
+  numberText: {
+    color: '#ffffff',
+    fontWeight: '600',
+  },
+  instructionText: {
+    fontSize: 15,
+    color: '#64748b',
+    flex: 1,
+  },
+  instructionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  instructionNumber: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#6366F1',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#F8FAFF', // Very light blue tint
     borderRadius: 20,
     padding: 24,
-    shadowColor: '#000',
+    shadowColor: '#6366F1', // Indigo shadow
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 3,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
+    elevation: 4,
+    marginBottom: 16,
   },
-  note:{
-    fontStyle: 'italic'
+  note: {
+    fontStyle: 'italic',
+    color: '#64748b',
+    marginBottom: 12,
+    fontSize: 14,
   },
   statusSection: {
     alignItems: 'center',
     paddingBottom: 24,
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: '#DFE3F8', // Light blue border
+    marginBottom: 4,
   },
   statusIndicator: {
     flexDirection: 'row',
@@ -250,15 +325,23 @@ const styles = StyleSheet.create({
   statusTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#0f172a',
+    color: '#4F5B93', // Blueish-gray for text, matching Blynk2
     marginBottom: 16,
   },
   disconnectButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-    backgroundColor: '#fee2e2',
-    borderRadius: 12,
+    backgroundColor: '#feeaea', // Lighter red
+    borderRadius: 16, // Increased radius
+    shadowColor: '#ef4444',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   disconnectText: {
     color: '#ef4444',
@@ -266,10 +349,18 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   connectButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6366F1', // Changed to indigo to match theme
     paddingVertical: 12,
     paddingHorizontal: 24,
-    borderRadius: 12,
+    borderRadius: 16, // Increased radius
+    shadowColor: '#6366F1',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   connectButtonText: {
     color: '#ffffff',
@@ -279,11 +370,12 @@ const styles = StyleSheet.create({
   scanningContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 8,
   },
   scanningText: {
-    color: '#64748b',
+    color: '#4F5B93', // Matching blue-gray
     marginLeft: 8,
-    fontSize: 16,
+    fontSize: 14,
   },
   configSection: {
     marginTop: 24,
@@ -291,34 +383,42 @@ const styles = StyleSheet.create({
   configTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#0f172a',
+    color: '#4F5B93', // Matching blue-gray
     marginBottom: 16,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f8fafc',
-    borderRadius: 12,
+    backgroundColor: '#F1F5FF', // Light blue input background
+    borderRadius: 16, // Increased radius
     paddingHorizontal: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: '#DFE3F8', // Light blue border
   },
   input: {
     flex: 1,
     paddingVertical: 12,
     paddingHorizontal: 12,
     fontSize: 16,
-    color: '#0f172a',
+    color: '#4F5B93', // Matching blue-gray
   },
   submitButton: {
-    backgroundColor: '#2563eb',
+    backgroundColor: '#6366F1', // Changed to indigo to match theme
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 16,
-    borderRadius: 12,
-    marginTop: 8,
+    borderRadius: 16, // Increased radius
+    marginTop: 16,
+    shadowColor: '#6366F1',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 3,
   },
   submitButtonText: {
     color: '#ffffff',
