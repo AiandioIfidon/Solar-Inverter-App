@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { View, Text, Button,ScrollView, StyleSheet, TextInput, Platform, PermissionsAndroid, TouchableOpacity, ActivityIndicator } from 'react-native';
 import {bleManager} from '@/utils/BLE_instance'
+=======
+import { View, Text, Button, StyleSheet, TextInput, Platform, PermissionsAndroid, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { bleManager } from '@/utils/BLE_instance'
+>>>>>>> bluetooth
 import { MaterialIcons, Feather } from '@expo/vector-icons';
 
 const BLEservice = () => {
@@ -95,7 +100,7 @@ const BLEservice = () => {
   };
 
   const write_passphrase = async () => {
-    try{
+    try {
       await device.writeCharacteristicWithoutResponseForService(
         SERVICE_UUID,
         PASSPHRASE_CHARACTERISTIC_UUID,
@@ -103,13 +108,13 @@ const BLEservice = () => {
         null
       )
       console.log("Successful write to Passphrase characteristic\nWritten value: " + PASSPHRASE)
-    } catch(error){
+    } catch (error) {
       console.error("Failed to write to characteristic", error)
     }
   }
 
   const write_both = async () => {
-    try{
+    try {
       write_ssid();
       write_passphrase();
       setTimeout(() => {
@@ -167,7 +172,7 @@ const BLEservice = () => {
 
         <View style={styles.configSection}>
           <Text style={styles.configTitle}>Network Configuration</Text>
-          
+
           <View style={styles.inputContainer}>
             <Feather name="user" size={20} color="#64748b" />
             <TextInput
@@ -178,7 +183,7 @@ const BLEservice = () => {
               onChangeText={text => changeSSID(text)}
             />
           </View>
-          
+
           <View style={styles.inputContainer}>
             <Feather name="lock" size={20} color="#64748b" />
             <TextInput
@@ -191,7 +196,7 @@ const BLEservice = () => {
             />
           </View>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.submitButton}
             onPress={write_both}
           >
@@ -293,10 +298,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   note: {
+<<<<<<< HEAD
     fontStyle: 'italic',
     color: '#64748b',
     marginBottom: 12,
     fontSize: 14,
+=======
+    fontStyle: 'italic'
+>>>>>>> bluetooth
   },
   statusSection: {
     alignItems: 'center',
